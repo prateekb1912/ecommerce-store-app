@@ -57,7 +57,7 @@ class OrderItem(models.Model):
 class Address(models.Model):
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
-    pincode = models.BigIntegerField(max_length=6)
+    pincode = models.BigIntegerField()
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE, primary_key=True)
 
 
