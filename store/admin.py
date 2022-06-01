@@ -1,4 +1,7 @@
 from django.contrib import admin
+from django.http import HttpRequest
+from django.db.models import Count
+from django.utils.html import format_html
 
 from store.models import Collection, Customer, Order, Product
 
@@ -28,5 +31,15 @@ class CustomerAdmin(admin.ModelAdmin):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'placed_at', 'customer']
 
-# Register your models here.
-admin.site.register(Collection)
+@admin.register(Collection)
+class CollectionAdmin(admin.ModelAdmin):
+    list_display = ['title', 'products_count']
+
+    @admin.display(ordering='products_count')
+    def products_count(self, collection):
+        return format_html('<a href="/admin/store/product/?collection__id={}"> {} </a>', collection.id ,collection.products_count)
+    
+    def get_queryset(self, request: HttpRequest):
+        return super().get_queryset(request).annotate(
+            products_count = Count('product')
+        )
